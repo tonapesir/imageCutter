@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Photo / Signature Crop Tool</title>
+<meta name="description" content="महाराष्ट्र बोर्ड SSC/HSC फॉर्मवरील स्कॅन शीटमधून फोटो व सही कापून, हेडशॉट बनवून झिप डाउनलोड करा — पूर्णपणे ब्राऊझरमध्येच, कुठलाही अपलोड सर्व्हरला जात नाही.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <h1>📷 Photo / Signature Crop Tool</h1>
+  <p class="tagline">स्कॅन टेम्प्लेट अपलोड करा → फोटो/सही आपोआप कापले जातील → हेडशॉट झिप डाउनलोड करा. सर्व प्रोसेसिंग तुमच्याच ब्राऊझरमध्ये होते — कुठलीही इमेज कुठेही अपलोड होत नाही.</p>
+</header>
+
+<main class="layout">
+
+  <section class="col left-col">
+    <div class="upload-controls">
+      <label class="btn primary" for="folderInput">📁 फोल्डर निवडा</label>
+      <input type="file" id="folderInput" webkitdirectory directory multiple hidden>
+      <label class="btn" for="filesInput">🖼️ एक/अनेक फाईल्स निवडा</label>
+      <input type="file" id="filesInput" accept="image/*" multiple hidden>
+    </div>
+
+    <div id="dropZone" class="drop-zone">येथे स्कॅन इमेज्स ड्रॅग-अँड-ड्रॉप करा</div>
+
+    <h3>Files</h3>
+    <ul id="fileList" class="file-list"></ul>
+
+    <fieldset class="mode-box">
+      <legend>Output mode</legend>
+      <label><input type="radio" name="outputMode" value="original"> Original size (full quality)</label>
+      <label><input type="radio" name="outputMode" value="limit40" checked> Limit to 40 KB (20-40 KB target)</label>
+    </fieldset>
+
+    <button id="processAllBtn" class="btn primary wide">Process All</button>
+    <button id="processSelectedBtn" class="btn wide">Process Selected</button>
+    <button id="downloadBtn" class="btn success wide" disabled>⬇️ Download ZIP</button>
+
+    <progress id="progress" class="hidden" value="0" max="1"></progress>
+    <p id="status" class="status"></p>
+  </section>
+
+  <section class="col center-col">
+    <h3>Page preview (crop boxes shown)</h3>
+    <div id="previewWrap" class="preview-wrap">
+      <canvas id="previewCanvas"></canvas>
+    </div>
+  </section>
+
+  <section class="col right-col">
+    <h3>Crop preview (this page)</h3>
+    <div id="cropGrid" class="crop-grid"></div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>Maharashtra State Board SSC/HSC फोटो-सही टेम्प्लेटसाठी बनवलेले टूल. सर्व क्रॉपिंग व साईझ-फिटिंग स्थानिक पातळीवर (client-side) होते.</p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="js/border.js"></script>
+<script src="js/boxmath.js"></script>
+<script src="js/headshot.js"></script>
+<script src="js/sizefit.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
