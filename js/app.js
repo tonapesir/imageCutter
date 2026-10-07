@@ -58,17 +58,28 @@ function cropCanvas(sourceCanvas, x0, y0, x1, y1) {
   return out;
 }
 
+/**
+ * स्कॅन पानाचे अचूक कोऑर्डिनेशन (transform) ठरवते — प्राधान्यक्रमाने आधी बाहेरील
+ * ठळक बॉर्डर, नंतर चारही कोपऱ्यांतील ठळक टिंब; दोन्ही सापडल्यास व जुळल्यास
+ * टिंब-आधारित affine (रोटेशन/स्क्यूसकट अचूक) वापरते — sheet_cutter.py प्रमाणेच.
+ */
+function calibratePage(pageCanvas) {
+  const gray = grayscaleFromCanvas(pageCanvas);
+  let border = null;
+  try {
+    border = detectOuterBorder(gray, pageCanvas.width, pageCanvas.height, 180);
+  } catch (e) {
+    border = null; // बॉर्डर सापडली नाही -> कोपरा-टिंबांवर अवलंबून राहू
+  }
+  const marks = detectCornerMarks(gray, pageCanvas.width, pageCanvas.height);
+  return computeCombinedTransform(border, marks, BOXES);
+}
+
 /** एका स्कॅन पानावर टप्पा 1 (फोटो+सही कापणे) व टप्पा 2 (हेडशॉट रिफाईन) चालवते. */
 async function processPage(file) {
   const bitmap = await fileToImageBitmap(file);
   const pageCanvas = bitmapToCanvas(bitmap);
-  const gray = grayscaleFromCanvas(pageCanvas);
-  const border = detectOuterBorder(gray, pageCanvas.width, pageCanvas.height, 180);
-
-  const ob = BOXES.outer_border;
-  const transform = computeTransform(
-    border, [ob.x0, ob.top, ob.x1, ob.bottom], BOXES.page_width_pt, BOXES.page_height_pt
-  );
+  const transform = calibratePage(pageCanvas);
 
   const photoCanvases = [];
   const signCanvases = [];
@@ -131,12 +142,7 @@ async function selectFileRow(i) {
   try {
     const bitmap = await fileToImageBitmap(uploadedFiles[i].file);
     const pageCanvas = bitmapToCanvas(bitmap);
-    const gray = grayscaleFromCanvas(pageCanvas);
-    const border = detectOuterBorder(gray, pageCanvas.width, pageCanvas.height, 180);
-    const ob = BOXES.outer_border;
-    const transform = computeTransform(
-      border, [ob.x0, ob.top, ob.x1, ob.bottom], BOXES.page_width_pt, BOXES.page_height_pt
-    );
+    const transform = calibratePage(pageCanvas);
 
     drawPreviewWithBoxes(pageCanvas, transform);
 
